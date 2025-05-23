@@ -119,20 +119,25 @@ backend/
 ```http
 POST /generate_reviews
 Content-Type: application/json
-
+示例请求体：
 {
-    "user_background": {
-        "gender": "男",
-        "age": 30,
-        "occupation": "工程师",
-        ...
-    },
-    "product_info": {
-        "name": "智能手机",
-        "category": "electronics",
-        ...
-    },
-    "num_reviews": 5
+  "user_background": {
+    "gender": "男",
+    "age": 35,
+    "occupation": "软件架构师",
+    "income_level": "较高",
+    "experience": "非常熟练",
+    "purchase_purpose": "家庭与工作两用",
+    "usage_frequency": "每天",
+    "region": "深圳"
+  },
+  "product_info": {
+    "name": "小米14 Pro",
+    "category": "electronics",
+    "price_range": "4500-6000元",
+    "features": ["徕卡影像", "第三代骁龙8", "LTPO OLED 屏幕", "120W快充", "IP68防水"]
+  },
+  "num_reviews": 1
 }
 ```
 
@@ -150,17 +155,61 @@ Content-Type: application/json
 ```http
 POST /check_quality
 Content-Type: application/json
-
+示例请求体：
 {
-    "review": {
-        "content": "评价内容",
-        "user_background": {
-            "gender": "男",
-            "age": 30,
-            "occupation": "工程师",
-            ...
-        }
+  "reviews": [
+    {
+      "id": null,
+      "user_background": {
+        "gender": "男",
+        "age": 35,
+        "occupation": "软件架构师",
+        "income_level": "较高",
+        "experience": "非常熟练",
+        "tech_familiarity": null,
+        "purchase_purpose": "家庭与工作两用",
+        "region": "深圳",
+        "education_level": null,
+        "usage_frequency": "每天",
+        "brand_loyalty": null
+      },
+      "product_info": {
+        "name": "小米14 Pro",
+        "category": "electronics",
+        "price_range": "4500-6000元",
+        "features": [
+          "徕卡影像",
+          "第三代骁龙8",
+          "LTPO OLED 屏幕",
+          "120W快充",
+          "IP68防水"
+        ],
+        "brand": null,
+        "model_number": null,
+        "specifications": null,
+        "warranty_period": null,
+        "expiration_date": null,
+        "material": null,
+        "weight": null,
+        "dimensions": null,
+        "package_info": null,
+        "energy_efficiency": null,
+        "safety_certifications": null,
+        "usage_instructions": null,
+        "additional_info": null
+      },
+      "rating": 5,
+      "content": "作为一名软件架构师，我对小米14 Pro的性能和功能非常满意。第三代骁龙8处理器确保了无论是日常使用还是高强度工作都能流畅运行，LTPO OLED屏幕的显示效果令人印象深刻，色彩鲜艳且细节丰富。徕卡影像系统让拍照成为一种享受，照片质量远超预期。120W快充技术大大缩短了充电时间，非常适合忙碌的工作日。IP68防水等级让我在雨天使用时更加安心。系统流畅度和App兼容性都非常好，没有遇到任何问题。电池续航表现出色，即使是在高强度使用下也能轻松撑过一天。散热表现良好，长时间使用也不会感到过热。售后服务响应迅速，质保政策让人放心。总的来说，小米14 Pro是一款非常适合家庭与工作两用的高端智能手机，强烈推荐给追求性能和品质的用户。",
+      "sentiment": "积极",
+      "experience": "",
+      "pros": [],
+      "cons": [],
+      "sentiment_score": 0.95,
+      "quality_score": 0.95,
+      "timeliness_analysis": null
     }
+  ],
+  "generation_time": 17.168129920959473
 }
 
 Response:
