@@ -18,17 +18,17 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "AI Data Generator"
     
-    # OpenAI配置
+   # OpenAI配置
     OPENAI_API_KEY1: str = ""# 请替换为你的 华东师范大学 API密钥
     #OPENAI_API_KEY2: str = "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"# 请替换为你的 Openai API密钥
-    OPENAI_API_KEY2: str = ""
-    OPENAI_API_KEY3: str = ""# 请替换为你的 Deepseek API密钥
+    OPENAI_API_KEY2: str = ""#请替换为你的 moonshot API密钥
+    OPENAI_API_KEY3: str = "sk-74d0b46395c244d9811daed1cf477a46"# 请替换为你的 Deepseek API密钥
     OPENAI_API_BASE1: str = "https://chat.ecnu.edu.cn/open/api/v1"
     #OPENAI_API_BASE2: str = "https://api.openai.com/v1"
-    OPENAI_API_BASE2: str = "https://vip.apiyi.com/v1/chat/completions"
+    OPENAI_API_BASE2: str = "https://api.moonshot.cn/v1"
     OPENAI_API_BASE3: str = "https://api.deepseek.com"
     OPENAI_API_MODEL1: str = "ecnu-plus"  # 使用华东师范大学的模型
-    OPENAI_API_MODEL2: str = "gpt-4o-mini-search-preview"  # 使用Openai的模型
+    OPENAI_API_MODEL2: str = "moonshot-v1-auto"  # 使用 moonshot的模型
     OPENAI_API_MODEL3: str = "deepseek-chat"  # 使用Deepseek的模型
     # 大模型配置
     LLM_TEMPERATURE: float = 0.7
