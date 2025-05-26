@@ -1,12 +1,12 @@
 from openai import OpenAI
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from ..models.data_model import GeneratedReview
 from ..config import settings
 import json
 import logging
 import asyncio
 import aiohttp
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,8 @@ class ReviewEnhancer:
         # 初始化 OpenAI 客户端
         self.client = OpenAI(
             api_key=settings.OPENAI_API_KEY2,
-            base_url=settings.OPENAI_API_BASE2
+            base_url=settings.OPENAI_API_BASE2,
+            timeout=30.0
         )
         self.search_api_url = settings.OPENAI_API_BASE2
         self.search_model = settings.OPENAI_API_MODEL2
@@ -58,46 +59,70 @@ class ReviewEnhancer:
 - confidence_score: 补充信息的可信度(0-1)
 """
 
-    @retry(
-        stop=stop_after_attempt(settings.MAX_RETRIES),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        reraise=True
-    )
-    async def _search_with_ai(self, query: str) -> Dict:
+    def _search_with_ai(self, query: str) -> Dict:
         """使用AI搜索API获取信息"""
         try:
-            response = await self.client.chat.completions.create(
-                model=self.search_model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant with internet search capability."},
-                    {"role": "user", "content": query}
-                ],
-                temperature=0.0,
-                max_tokens=4000
-            )
-            return response.choices[0].message.content
+            messages = [
+                {"role": "system", "content": "你是一个专业的评价增强助手，擅长使用网络搜索获取产品相关信息。"},
+                {"role": "user", "content": query}
+            ]
+
+            finish_reason = None
+            while finish_reason is None or finish_reason == "tool_calls":
+                response = self.client.chat.completions.create(
+                    model="moonshot-v1-auto",  # 使用自动选择模型大小的版本
+                    messages=messages,
+                    temperature=0.3,
+                    tools=[{
+                        "type": "builtin_function",
+                        "function": {
+                            "name": "$web_search",
+                        }
+                    }]
+                )
+                
+                choice = response.choices[0]
+                finish_reason = choice.finish_reason
+                
+                if finish_reason == "tool_calls":
+                    messages.append(choice.message)
+                    for tool_call in choice.message.tool_calls:
+                        if tool_call.function.name == "$web_search":
+                            tool_call_arguments = json.loads(tool_call.function.arguments)
+                            # 记录搜索消耗的tokens
+                            search_tokens = tool_call_arguments.get("usage", {}).get("total_tokens", 0)
+                            logger.info(f"搜索消耗tokens: {search_tokens}")
+                            
+                            # 返回搜索参数
+                            messages.append({
+                                "role": "tool",
+                                "tool_call_id": tool_call.id,
+                                "name": tool_call.function.name,
+                                "content": json.dumps(tool_call_arguments)
+                            })
+                else:
+                    # 当finish_reason为stop时，返回最终的内容
+                    return choice.message.content
+
         except Exception as e:
             logger.error(f"搜索API调用失败: {str(e)}")
+            if hasattr(e, 'response'):
+                logger.error(f"API响应状态码: {e.response.status_code}")
+                logger.error(f"API错误信息: {e.response.text}")
             raise
 
-    @retry(
-        stop=stop_after_attempt(settings.MAX_RETRIES),
-        wait=wait_exponential(multiplier=1, min=4, max=10),
-        reraise=True
-    )
-    async def _call_enhancement_api(self, prompt: str) -> Dict:
+    def _call_enhancement_api(self, prompt: str) -> Dict:
         """调用API进行评价增强"""
         try:
             # 首先进行网络搜索
-            search_result = await self._search_with_ai(prompt)
+            search_result = self._search_with_ai(prompt)
             
             # 使用搜索结果增强评价
-            response = await self.client.chat.completions.create(
-                model=settings.OPENAI_API_MODEL2,
+            response = self.client.chat.completions.create(
+                model="moonshot-v1-auto",
                 messages=[
-                    {"role": "system", "content": "你是一个专业的评价增强助手。"},
-                    {"role": "user", "content": prompt},
-                    {"role": "assistant", "content": search_result}
+                    {"role": "system", "content": "你是一个专业的评价增强助手。请基于搜索结果，将补充的信息自然地融入到原始评价中，保持评价的连贯性和可读性。"},
+                    {"role": "user", "content": f"原始评价：\n{prompt}\n\n搜索结果：\n{search_result}\n\n请将搜索结果中的信息自然地融入到原始评价中，生成一个完整的、连贯的评价。保持原有的评价风格和情感倾向，只补充客观事实和数据。"}
                 ],
                 temperature=settings.LLM_TEMPERATURE,
                 max_tokens=settings.LLM_MAX_TOKENS,
@@ -116,13 +141,17 @@ class ReviewEnhancer:
                 return result
             except json.JSONDecodeError as e:
                 logger.error(f"JSON解析错误: {str(e)}")
+                logger.error(f"原始响应内容: {content}")
                 raise
                 
         except Exception as e:
             logger.error(f"API调用失败: {str(e)}")
+            if hasattr(e, 'response'):
+                logger.error(f"API响应状态码: {e.response.status_code}")
+                logger.error(f"API错误信息: {e.response.text}")
             raise
 
-    async def enhance_review(self, review: GeneratedReview) -> GeneratedReview:
+    def enhance_review(self, review: GeneratedReview) -> GeneratedReview:
         """
         增强评价内容
         
@@ -137,7 +166,7 @@ class ReviewEnhancer:
             prompt = self._create_enhancement_prompt(review)
             
             # 调用API进行增强
-            result = await self._call_enhancement_api(prompt)
+            result = self._call_enhancement_api(prompt)
             
             # 更新评价对象
             review.content = result["enhanced_content"]
@@ -151,9 +180,12 @@ class ReviewEnhancer:
             
         except Exception as e:
             logger.error(f"评价增强失败: {str(e)}")
+            if hasattr(e, 'response'):
+                logger.error(f"API响应状态码: {e.response.status_code}")
+                logger.error(f"API错误信息: {e.response.text}")
             return review
             
-    async def enhance_reviews(self, reviews: List[GeneratedReview]) -> List[GeneratedReview]:
+    def enhance_reviews(self, reviews: List[GeneratedReview]) -> List[GeneratedReview]:
         """
         批量增强评价内容
         
@@ -166,7 +198,7 @@ class ReviewEnhancer:
         try:
             enhanced_reviews = []
             for review in reviews:
-                enhanced_review = await self.enhance_review(review)
+                enhanced_review = self.enhance_review(review)
                 enhanced_reviews.append(enhanced_review)
             return enhanced_reviews
         except Exception as e:
