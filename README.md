@@ -46,7 +46,7 @@ backend/
 - 最新用户反馈和评价趋势
 - 技术参数和性能数据补充
 - 使用场景和适用人群分析
-- 异步批量处理能力
+- 批量处理能力
 
 ### 4. 质量控制机制
 - 多维度质量评分系统
@@ -145,9 +145,25 @@ Content-Type: application/json
 ```http
 POST /enhance_reviews
 Content-Type: application/json
-
+示例请求体：
 {
-    "reviews": [...]
+  "user_background": {
+    "gender": "男",
+    "age": 35,
+    "occupation": "软件架构师",
+    "income_level": "较高",
+    "experience": "非常熟练",
+    "purchase_purpose": "家庭与工作两用",
+    "usage_frequency": "每天",
+    "region": "深圳"
+  },
+  "product_info": {
+    "name": "小米14 Pro",
+    "category": "electronics",
+    "price_range": "4500-6000元",
+    "features": ["徕卡影像", "第三代骁龙8", "LTPO OLED 屏幕", "120W快充", "IP68防水"]
+  },
+  "num_reviews": 1
 }
 ```
 
@@ -270,10 +286,10 @@ from backend.service.review_enhancer import ReviewEnhancer
 enhancer = ReviewEnhancer()
 
 # 增强单个评价
-enhanced_review = await enhancer.enhance_review(review)
+enhanced_review = enhancer.enhance_review(review)
 
 # 批量增强评价
-enhanced_reviews = await enhancer.enhance_reviews(reviews)
+enhanced_reviews = enhancer.enhance_reviews(reviews)
 ```
 
 ### 3. 质量检查
