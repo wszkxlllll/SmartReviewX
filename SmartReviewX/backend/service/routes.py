@@ -246,7 +246,7 @@ async def enhance_reviews(request: ReviewGenerationRequest):
             reviews.append(review)
             
         # 对评价进行增强
-        enhanced_reviews = await review_enhancer.enhance_reviews(reviews)
+        enhanced_reviews = review_enhancer.enhance_reviews(reviews)
         
         total_time = time.time() - start_time
         
