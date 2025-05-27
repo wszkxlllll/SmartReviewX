@@ -20,9 +20,9 @@ class Settings(BaseSettings):
     
    # OpenAI配置
     OPENAI_API_KEY1: str = ""# 请替换为你的 华东师范大学 API密钥
-    #OPENAI_API_KEY2: str = "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"# 请替换为你的 Openai API密钥
+    #OPENAI_API_KEY2: str = ""# 请替换为你的 Openai API密钥
     OPENAI_API_KEY2: str = ""#请替换为你的 moonshot API密钥
-    OPENAI_API_KEY3: str = "sk-74d0b46395c244d9811daed1cf477a46"# 请替换为你的 Deepseek API密钥
+    OPENAI_API_KEY3: str = ""# 请替换为你的 Deepseek API密钥
     OPENAI_API_BASE1: str = "https://chat.ecnu.edu.cn/open/api/v1"
     #OPENAI_API_BASE2: str = "https://api.openai.com/v1"
     OPENAI_API_BASE2: str = "https://api.moonshot.cn/v1"
