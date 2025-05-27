@@ -251,7 +251,7 @@ Response:
 
 ## 使用示例
 
-### 写在前面：backend文件夹为源代码，只需要把这部分拉下来，然后执行 pip install -r requirements.txt && python -m uvicorn backend.main:app --reload 即可在本地运行（需要自行配置config文件）
+### 写在前面：backend文件夹为源代码，只需要把这部分和requirement.txt文件拉下来，然后执行 pip install -r requirements.txt && python -m uvicorn backend.main:app --reload 即可在本地运行（需要自行配置config文件）
 
 ### 1. 生成评价
 ```python
