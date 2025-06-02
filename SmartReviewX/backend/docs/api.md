@@ -59,12 +59,6 @@
     "cons": ["缺点1"],
     "sentiment_score": 0.9,
     "quality_score": 0.85,
-    "user_background": {
-        // 用户背景信息
-    },
-    "product_info": {
-        // 产品信息
-    }
 }
 ```
 
