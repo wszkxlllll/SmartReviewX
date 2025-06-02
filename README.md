@@ -86,227 +86,260 @@ backend/
   - 2分：较少符合标准，表现较差
   - 1分：完全不符合标准，表现差
 
-## 技术特点
+## 使用教程
 
-### 1. 模块化设计
-- 基于工厂模式的服务生成
-- 可扩展的类别支持系统
-- 插件式的评价增强机制
-- 灵活的质量控制体系
+### 1. 基本使用流程
 
-### 2. 高可用性设计
-- 多级降级策略
-- 异步任务处理
-- 重试机制
-- 错误处理
-- 日志记录
-
-### 3. 性能优化
-- 异步并发处理
-- 批量操作支持
-- 缓存机制
-- 资源池化
-
-### 4. 安全性
-- 输入验证
-- 错误处理
-- 日志记录
-- 异常捕获
-
-## API接口
-
-### 1. 评价生成
-```http
-POST /generate_reviews
-Content-Type: application/json
-示例请求体：
-{
-  "user_background": {
-    "gender": "男",
-    "age": 35,
-    "occupation": "软件架构师",
-    "income_level": "较高",
-    "experience": "非常熟练",
-    "purchase_purpose": "家庭与工作两用",
-    "usage_frequency": "每天",
-    "region": "深圳"
-  },
-  "product_info": {
-    "name": "小米14 Pro",
-    "category": "electronics",
-    "price_range": "4500-6000元",
-    "features": ["徕卡影像", "第三代骁龙8", "LTPO OLED 屏幕", "120W快充", "IP68防水"]
-  },
-  "num_reviews": 1
-}
-```
-
-### 2. 评价增强
-```http
-POST /enhance_reviews
-Content-Type: application/json
-示例请求体：
-{
-  "user_background": {
-    "gender": "男",
-    "age": 35,
-    "occupation": "软件架构师",
-    "income_level": "较高",
-    "experience": "非常熟练",
-    "purchase_purpose": "家庭与工作两用",
-    "usage_frequency": "每天",
-    "region": "深圳"
-  },
-  "product_info": {
-    "name": "小米14 Pro",
-    "category": "electronics",
-    "price_range": "4500-6000元",
-    "features": ["徕卡影像", "第三代骁龙8", "LTPO OLED 屏幕", "120W快充", "IP68防水"]
-  },
-  "num_reviews": 1
-}
-```
-
-### 3. 质量检查
-```http
-POST /check_quality
-Content-Type: application/json
-示例请求体：
-{
-  "reviews": [
-    {
-      "id": null,
-      "user_background": {
-        "gender": "男",
-        "age": 35,
-        "occupation": "软件架构师",
-        "income_level": "较高",
-        "experience": "非常熟练",
-        "tech_familiarity": null,
-        "purchase_purpose": "家庭与工作两用",
-        "region": "深圳",
-        "education_level": null,
-        "usage_frequency": "每天",
-        "brand_loyalty": null
-      },
-      "product_info": {
-        "name": "小米14 Pro",
-        "category": "electronics",
-        "price_range": "4500-6000元",
-        "features": [
-          "徕卡影像",
-          "第三代骁龙8",
-          "LTPO OLED 屏幕",
-          "120W快充",
-          "IP68防水"
-        ],
-        "brand": null,
-        "model_number": null,
-        "specifications": null,
-        "warranty_period": null,
-        "expiration_date": null,
-        "material": null,
-        "weight": null,
-        "dimensions": null,
-        "package_info": null,
-        "energy_efficiency": null,
-        "safety_certifications": null,
-        "usage_instructions": null,
-        "additional_info": null
-      },
-      "rating": 5,
-      "content": "作为一名软件架构师，我对小米14 Pro的性能和功能非常满意。第三代骁龙8处理器确保了无论是日常使用还是高强度工作都能流畅运行，LTPO OLED屏幕的显示效果令人印象深刻，色彩鲜艳且细节丰富。徕卡影像系统让拍照成为一种享受，照片质量远超预期。120W快充技术大大缩短了充电时间，非常适合忙碌的工作日。IP68防水等级让我在雨天使用时更加安心。系统流畅度和App兼容性都非常好，没有遇到任何问题。电池续航表现出色，即使是在高强度使用下也能轻松撑过一天。散热表现良好，长时间使用也不会感到过热。售后服务响应迅速，质保政策让人放心。总的来说，小米14 Pro是一款非常适合家庭与工作两用的高端智能手机，强烈推荐给追求性能和品质的用户。",
-      "sentiment": "积极",
-      "experience": "",
-      "pros": [],
-      "cons": [],
-      "sentiment_score": 0.95,
-      "quality_score": 0.95,
-      "timeliness_analysis": null
-    }
-  ],
-  "generation_time": 17.168129920959473
-}
-
-Response:
-{
-    "status": "completed",
-    "result": {
-        "scores": {
-            "真实性": 4.5,
-            "一致性": 4.0,
-            "具体性": 4.5,
-            "语言自然度": 4.0
-        },
-        "overall_score": 4.25,
-        "analysis": [
-            "评价真实可信，充分体现了用户的教育背景和职业特点",
-            "内容连贯，逻辑清晰，观点前后一致",
-            "包含具体的使用场景和体验细节，描述生动",
-            "语言表达自然流畅，符合用户特征"
-        ]
-    }
-}
-```
-
-## 使用示例
-
-### 写在前面：backend文件夹为源代码，只需要把这部分和requirement.txt文件拉下来，然后执行 `pip install -r requirements.txt && python -m uvicorn backend.main:app --reload` 即可在本地运行（需要自行配置config文件）
-
-### 1. 生成评价
+#### 1.1 准备用户背景信息
 ```python
-from backend.models.data_model import UserBackground, ProductInfo
-from backend.service.category_generators import ReviewGeneratorFactory
+from backend.models.data_model import UserBackground
 
-# 创建用户背景
 user_background = UserBackground(
     gender="男",
     age=30,
     occupation="工程师",
-    # ... 其他用户信息
+    income_level="中高收入",
+    experience="专家",
+    tech_familiarity="精通",
+    purchase_purpose="自用",
+    region="北京",
+    education_level="硕士",
+    usage_frequency="每天",
+    brand_loyalty="高"
 )
+```
 
-# 创建产品信息
-product_info = ProductInfo(
-    name="智能手机",
+#### 1.2 准备产品信息
+```python
+from backend.models.data_model import ProductInfo
+
+# 电子产品示例
+electronics_info = ProductInfo(
+    name="iPhone 15 Pro",
     category="electronics",
-    # ... 其他产品信息
+    price_range="高端",
+    brand="Apple",
+    model_number="A3096",
+    specifications={
+        "处理器": "A17 Pro",
+        "内存": "8GB",
+        "存储": "256GB",
+        "屏幕": "6.1英寸 Super Retina XDR"
+    },
+    warranty_period="1年",
+    features=["5G网络", "Pro相机系统", "钛金属边框"]
 )
 
-# 获取对应类别的生成器
+# 日用品示例
+daily_necessities_info = ProductInfo(
+    name="智能保温杯",
+    category="daily_necessities",
+    price_range="中端",
+    brand="小米",
+    material="304不锈钢",
+    package_info="环保纸盒包装",
+    features=["温度显示", "智能提醒", "保温12小时"]
+)
+
+# 食品饮料示例
+food_beverage_info = ProductInfo(
+    name="有机燕麦片",
+    category="food_beverage",
+    price_range="中端",
+    brand="桂格",
+    expiration_date="12个月",
+    package_info="铝箔袋装",
+    features=["有机认证", "无添加", "高纤维"]
+)
+
+# 服装鞋帽示例
+clothing_info = ProductInfo(
+    name="轻量羽绒服",
+    category="clothing",
+    price_range="中高端",
+    brand="优衣库",
+    material="90%白鸭绒",
+    dimensions="M码",
+    features=["轻便保暖", "可收纳", "防风防水"]
+)
+
+# 家用电器示例
+home_appliance_info = ProductInfo(
+    name="智能空气净化器",
+    category="home_appliance",
+    price_range="中高端",
+    brand="小米",
+    energy_efficiency="一级能效",
+    warranty_period="2年",
+    features=["HEPA过滤", "智能控制", "静音设计"]
+)
+
+# 教育文具示例
+stationery_info = ProductInfo(
+    name="智能笔记本",
+    category="stationery",
+    price_range="中端",
+    brand="印象笔记",
+    material="环保纸张",
+    safety_certifications=["CE认证", "RoHS认证"],
+    features=["云同步", "OCR识别", "多设备支持"]
+)
+```
+
+#### 1.3 生成评价
+```python
+from backend.service.category_generators import ReviewGeneratorFactory
+
+# 创建生成器
 generator = ReviewGeneratorFactory.create_generator(product_info.category)
 
 # 生成评价
 review = generator.generate_review(user_background, product_info)
 ```
 
-### 2. 增强评价
-```python
-from backend.service.review_enhancer import ReviewEnhancer
+### 2. 类别特定功能
 
-# 创建评价增强器
-enhancer = ReviewEnhancer()
+#### 2.1 电子产品 (electronics)
+- 必填信息：型号、规格、保修期
+- 特定评价维度：
+  - 功能性能评估
+  - 硬件配置分析
+  - 软件体验评价
+  - 电池续航表现
+  - 散热性能
+  - 售后服务评价
 
-# 增强单个评价
-enhanced_review = enhancer.enhance_review(review)
+#### 2.2 日用品 (daily_necessities)
+- 必填信息：材质、包装信息
+- 特定评价维度：
+  - 使用便捷性
+  - 材质安全性
+  - 耐用性评估
+  - 价格合理性
+  - 包装设计评价
 
-# 批量增强评价
-enhanced_reviews = enhancer.enhance_reviews(reviews)
+#### 2.3 食品饮料 (food_beverage)
+- 必填信息：有效期、包装信息
+- 特定评价维度：
+  - 口味评价
+  - 包装安全性
+  - 保质期评估
+  - 营养价值分析
+  - 价格合理性
+
+#### 2.4 服装鞋帽 (clothing)
+- 必填信息：材质、尺寸
+- 特定评价维度：
+  - 材质舒适度
+  - 款式设计评价
+  - 尺码合适性
+  - 透气性评估
+  - 洗护便捷性
+
+#### 2.5 家用电器 (home_appliance)
+- 必填信息：能效等级、保修期
+- 特定评价维度：
+  - 功能实用性
+  - 能耗表现
+  - 使用便捷性
+  - 维护成本
+  - 售后服务评价
+
+#### 2.6 教育文具 (stationery)
+- 必填信息：材质、安全认证
+- 特定评价维度：
+  - 使用安全性
+  - 环保性评估
+  - 实用性分析
+  - 设计创新性
+  - 价格合理性
+
+### 3. API使用示例
+
+#### 3.1 生成评价
+```http
+POST /generate_reviews
+Content-Type: application/json
+
+{
+    "user_background": {
+        "gender": "男",
+        "age": 30,
+        "occupation": "工程师",
+        "income_level": "中高收入",
+        "experience": "专家",
+        "tech_familiarity": "精通",
+        "purchase_purpose": "自用",
+        "region": "北京",
+        "education_level": "硕士",
+        "usage_frequency": "每天",
+        "brand_loyalty": "高"
+    },
+    "product_info": {
+        "name": "iPhone 15 Pro",
+        "category": "electronics",
+        "price_range": "高端",
+        "brand": "Apple",
+        "model_number": "A3096",
+        "specifications": {
+            "处理器": "A17 Pro",
+            "内存": "8GB",
+            "存储": "256GB",
+            "屏幕": "6.1英寸 Super Retina XDR"
+        },
+        "warranty_period": "1年",
+        "features": ["5G网络", "Pro相机系统", "钛金属边框"]
+    },
+    "num_reviews": 1
+}
 ```
 
-### 3. 质量检查
-```python
-from backend.utils.quality_check import QualityChecker
+#### 3.2 增强评价
+```http
+POST /enhance_reviews
+Content-Type: application/json
 
-# 创建质量检查器
-checker = QualityChecker()
-
-# 检查单个评价
-result = await checker.check_quality(review)
-
-# 批量检查评价
-results = checker.check_quality_batch(reviews)
+{
+    "user_background": {
+        // 同上
+    },
+    "product_info": {
+        // 同上
+    },
+    "num_reviews": 1
+}
 ```
+
+#### 3.3 质量检查
+```http
+POST /check_quality
+Content-Type: application/json
+
+{
+    "review": {
+        "content": "评价内容",
+        "rating": 4.5,
+        "sentiment": "positive",
+        "sentiment_score": 0.9,
+        "quality_score": 0.85,
+        "pros": ["优点1", "优点2"],
+        "cons": ["缺点1"]
+    }
+}
+```
+
+### 4. 错误处理
+- 所有API调用都会返回标准的HTTP状态码
+- 错误响应包含详细的错误信息
+- 支持多级降级策略确保服务可用性
+- 完整的日志记录系统
+
+### 5. 最佳实践
+1. 提供完整的用户背景信息以获得更个性化的评价
+2. 确保产品信息符合类别要求
+3. 使用批量生成时注意控制数量（1-10条）
+4. 定期进行质量检查确保评价质量
+5. 使用评价增强功能补充最新信息
 
 ## 开发计划
 
