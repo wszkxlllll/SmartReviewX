@@ -297,12 +297,13 @@ class ReviewGeneratorFactory:
 
 # 验证必填字段
 def validate_product_info(product_info: ProductInfo):
+    """验证电子产品信息（可选）"""
     if not product_info.model_number:
-        raise ValueError("电子产品必须提供型号信息")
+        logger.warning("电子产品未提供型号信息")
     if not product_info.specifications:
-        raise ValueError("电子产品必须提供规格信息")
+        logger.warning("电子产品未提供规格信息")
     if not product_info.warranty_period:
-        raise ValueError("电子产品必须提供保修期信息")
+        logger.warning("电子产品未提供保修期信息")
         
 # 添加电子产品特定的评价要点
 def extend_product_info_features(product_info: ProductInfo):
@@ -319,10 +320,11 @@ def extend_product_info_features(product_info: ProductInfo):
 
 # 验证必填字段
 def validate_daily_necessities_info(product_info: ProductInfo):
+    """验证日用品信息（可选）"""
     if not product_info.material:
-        raise ValueError("日用品必须提供材质信息")
+        logger.warning("日用品未提供材质信息")
     if not product_info.package_info:
-        raise ValueError("日用品必须提供包装信息")
+        logger.warning("日用品未提供包装信息")
         
 # 添加日用品特定的评价要点
 def extend_daily_necessities_features(product_info: ProductInfo):
@@ -338,10 +340,11 @@ def extend_daily_necessities_features(product_info: ProductInfo):
 
 # 验证必填字段
 def validate_food_beverage_info(product_info: ProductInfo):
+    """验证食品饮料信息（可选）"""
     if not product_info.expiration_date:
-        raise ValueError("食品饮料必须提供有效期信息")
+        logger.warning("食品饮料未提供有效期信息")
     if not product_info.package_info:
-        raise ValueError("食品饮料必须提供包装信息")
+        logger.warning("食品饮料未提供包装信息")
         
 # 添加食品饮料特定的评价要点
 def extend_food_beverage_features(product_info: ProductInfo):
@@ -357,10 +360,11 @@ def extend_food_beverage_features(product_info: ProductInfo):
 
 # 验证必填字段
 def validate_clothing_info(product_info: ProductInfo):
+    """验证服装鞋帽信息（可选）"""
     if not product_info.material:
-        raise ValueError("服装鞋帽必须提供材质信息")
+        logger.warning("服装鞋帽未提供材质信息")
     if not product_info.dimensions:
-        raise ValueError("服装鞋帽必须提供尺寸信息")
+        logger.warning("服装鞋帽未提供尺寸信息")
         
 # 添加服装鞋帽特定的评价要点
 def extend_clothing_features(product_info: ProductInfo):
@@ -376,10 +380,11 @@ def extend_clothing_features(product_info: ProductInfo):
 
 # 验证必填字段
 def validate_home_appliance_info(product_info: ProductInfo):
+    """验证家用电器信息（可选）"""
     if not product_info.energy_efficiency:
-        raise ValueError("家用电器必须提供能效等级信息")
+        logger.warning("家用电器未提供能效等级信息")
     if not product_info.warranty_period:
-        raise ValueError("家用电器必须提供保修期信息")
+        logger.warning("家用电器未提供保修期信息")
         
 # 添加家用电器特定的评价要点
 def extend_home_appliance_features(product_info: ProductInfo):
@@ -395,10 +400,11 @@ def extend_home_appliance_features(product_info: ProductInfo):
 
 # 验证必填字段
 def validate_stationery_info(product_info: ProductInfo):
+    """验证教育文具信息（可选）"""
     if not product_info.material:
-        raise ValueError("教育文具必须提供材质信息")
+        logger.warning("教育文具未提供材质信息")
     if not product_info.safety_certifications:
-        raise ValueError("教育文具必须提供安全认证信息")
+        logger.warning("教育文具未提供安全认证信息")
         
 # 添加教育文具特定的评价要点
 def extend_stationery_features(product_info: ProductInfo):
