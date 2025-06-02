@@ -316,15 +316,74 @@ POST /check_quality
 Content-Type: application/json
 
 {
-    "review": {
-        "content": "评价内容",
-        "rating": 4.5,
-        "sentiment": "positive",
-        "sentiment_score": 0.9,
-        "quality_score": 0.85,
-        "pros": ["优点1", "优点2"],
-        "cons": ["缺点1"]
+  "reviews": [
+    {
+      "id": null,
+      "user_background": {
+        "gender": "男",
+        "age": 30,
+        "occupation": "工程师",
+        "income_level": "中高收入",
+        "experience": "专家",
+        "tech_familiarity": "精通",
+        "purchase_purpose": "自用",
+        "region": "北京",
+        "education_level": "硕士",
+        "usage_frequency": "每天",
+        "brand_loyalty": "高"
+      },
+      "product_info": {
+        "name": "iPhone 15 Pro",
+        "category": "electronics",
+        "price_range": "高端",
+        "features": [
+          "5G网络",
+          "Pro相机系统",
+          "钛金属边框"
+        ],
+        "brand": "Apple",
+        "model_number": "A3096",
+        "specifications": {
+          "处理器": "A17 Pro",
+          "内存": "8GB",
+          "存储": "256GB",
+          "屏幕": "6.1英寸 Super Retina XDR"
+        },
+        "warranty_period": "1年",
+        "expiration_date": null,
+        "material": null,
+        "weight": null,
+        "dimensions": null,
+        "package_info": null,
+        "energy_efficiency": null,
+        "safety_certifications": null,
+        "usage_instructions": null,
+        "additional_info": null
+      },
+      "rating": 5,
+      "content": "作为一名工程师，我对iPhone 15 Pro的性能和设计感到非常满意。A17 Pro处理器的运行速度令人印象深刻，无论是日常使用还是运行专业应用都毫无压力。8GB的内存和256GB的存储空间完全满足我的需求，Super Retina XDR屏幕的显示效果也非常出色。钛金属边框不仅美观，还增加了手机的耐用性。5G网络的加入让我的网络体验更上一层楼，Pro相机系统的拍照效果也非常专业。电池续航表现良好，能够支持我一天的高强度使用。散热方面，即使在长时间使用高性能应用时，手机也只是微温，表现令人满意。Apple的售后服务一直很可靠，1年的保修期也让我购买时更加放心。总的来说，iPhone 15 Pro是一款非常适合技术精通用户的高端手机。",
+      "sentiment": "积极",
+      "experience": "",
+      "pros": [
+        "A17 Pro处理器运行速度快",
+        "8GB内存和256GB存储空间充足",
+        "Super Retina XDR屏幕显示效果出色",
+        "钛金属边框美观耐用",
+        "5G网络体验优秀",
+        "Pro相机系统拍照效果专业",
+        "电池续航表现良好",
+        "散热表现令人满意",
+        "售后服务可靠"
+      ],
+      "cons": [
+        "价格较高"
+      ],
+      "sentiment_score": 0.95,
+      "quality_score": 0.95,
+      "timeliness_analysis": null
     }
+  ],
+  "generation_time": 30.63783073425293
 }
 ```
 
