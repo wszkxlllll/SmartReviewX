@@ -200,7 +200,7 @@ review = generator.generate_review(user_background, product_info)
 ### 2. 类别特定功能
 
 #### 2.1 电子产品 (electronics)
-- 必填信息：型号、规格、保修期
+- 建议填写信息：型号、规格、保修期
 - 特定评价维度：
   - 功能性能评估
   - 硬件配置分析
@@ -210,7 +210,7 @@ review = generator.generate_review(user_background, product_info)
   - 售后服务评价
 
 #### 2.2 日用品 (daily_necessities)
-- 必填信息：材质、包装信息
+- 建议填写信息：材质、包装信息
 - 特定评价维度：
   - 使用便捷性
   - 材质安全性
@@ -219,7 +219,7 @@ review = generator.generate_review(user_background, product_info)
   - 包装设计评价
 
 #### 2.3 食品饮料 (food_beverage)
-- 必填信息：有效期、包装信息
+- 建议填写信息：有效期、包装信息
 - 特定评价维度：
   - 口味评价
   - 包装安全性
@@ -228,7 +228,7 @@ review = generator.generate_review(user_background, product_info)
   - 价格合理性
 
 #### 2.4 服装鞋帽 (clothing)
-- 必填信息：材质、尺寸
+- 建议填写信息：材质、尺寸
 - 特定评价维度：
   - 材质舒适度
   - 款式设计评价
@@ -237,7 +237,7 @@ review = generator.generate_review(user_background, product_info)
   - 洗护便捷性
 
 #### 2.5 家用电器 (home_appliance)
-- 必填信息：能效等级、保修期
+- 建议填写信息：能效等级、保修期
 - 特定评价维度：
   - 功能实用性
   - 能耗表现
@@ -246,7 +246,7 @@ review = generator.generate_review(user_background, product_info)
   - 售后服务评价
 
 #### 2.6 教育文具 (stationery)
-- 必填信息：材质、安全认证
+- 建议填写信息：材质、安全认证
 - 特定评价维度：
   - 使用安全性
   - 环保性评估
