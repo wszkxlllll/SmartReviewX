@@ -14,6 +14,7 @@ from uuid import uuid4
 import logging
 import json
 from pathlib import Path
+from datetime import datetime
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -94,24 +95,35 @@ async def process_batch_quality_check(reviews: List[GeneratedReview], task_id: s
     try:
         logger.info(f"开始处理批量质量检查任务 {task_id}")
         results = []
+        total_reviews = len(reviews)
+        
         for i, review in enumerate(reviews, 1):
-            logger.info(f"正在检查第 {i}/{len(reviews)} 条评价")
+            logger.info(f"正在检查第 {i}/{total_reviews} 条评价")
             result = await quality_checker.check_quality(review)
             results.append(result)
+            
+            # 更新进度
+            quality_check_results[task_id]["processed_reviews"] = i
+            quality_check_results[task_id]["results"] = results
+            save_storage(quality_check_results)
+            
         logger.info(f"批量质量检查任务 {task_id} 完成")
         
         # 更新任务结果
-        quality_check_results[task_id] = {
+        quality_check_results[task_id].update({
             "status": "completed",
-            "results": results
-        }
+            "results": results,
+            "end_time": datetime.now().isoformat()
+        })
         save_storage(quality_check_results)
+        
     except Exception as e:
         logger.error(f"批量质量检查任务 {task_id} 失败: {str(e)}")
-        quality_check_results[task_id] = {
+        quality_check_results[task_id].update({
             "status": "failed",
-            "error": str(e)
-        }
+            "error": str(e),
+            "end_time": datetime.now().isoformat()
+        })
         save_storage(quality_check_results)
 
 def validate_user_background(user_background: UserBackground, category: str) -> bool:
@@ -354,7 +366,7 @@ async def check_quality_batch(request: ReviewGenerationResponse, background_task
     - **reviews**: 评价列表
     - **generation_time**: 生成时间
     
-    返回质量检查结果
+    返回任务ID，用于后续查询结果
     """
     try:
         # 验证请求参数
@@ -370,7 +382,11 @@ async def check_quality_batch(request: ReviewGenerationResponse, background_task
         # 初始化任务状态
         quality_check_results[task_id] = {
             "status": "processing",
-            "message": "质量检查任务已启动"
+            "message": "质量检查任务已启动",
+            "total_reviews": len(request.reviews),
+            "processed_reviews": 0,
+            "results": [],
+            "start_time": datetime.now().isoformat()
         }
         save_storage(quality_check_results)
         
@@ -384,12 +400,66 @@ async def check_quality_batch(request: ReviewGenerationResponse, background_task
         return {
             "status": "processing",
             "task_id": task_id,
-            "message": "质量检查任务已启动"
+            "message": "质量检查任务已启动",
+            "total_reviews": len(request.reviews)
         }
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"启动批量质量检查任务时发生错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@app.get("/check_quality_batch/{task_id}", response_model=Dict[str, Any])
+async def get_batch_quality_check_result(task_id: str):
+    """
+    获取批量质量检查结果
+    
+    - **task_id**: 任务ID
+    
+    返回质量检查结果或任务状态
+    """
+    try:
+        if task_id not in quality_check_results:
+            raise HTTPException(status_code=404, detail="任务不存在")
+            
+        result = quality_check_results[task_id]
+        
+        # 如果任务还在处理中，返回当前状态
+        if result["status"] == "processing":
+            return {
+                "status": "processing",
+                "task_id": task_id,
+                "message": "质量检查任务进行中",
+                "total_reviews": result["total_reviews"],
+                "processed_reviews": result["processed_reviews"],
+                "progress": f"{result['processed_reviews']}/{result['total_reviews']}"
+            }
+            
+        # 如果任务完成，返回完整结果
+        if result["status"] == "completed":
+            return {
+                "status": "completed",
+                "task_id": task_id,
+                "message": "质量检查任务已完成",
+                "total_reviews": result["total_reviews"],
+                "results": result["results"],
+                "start_time": result["start_time"],
+                "end_time": result.get("end_time", datetime.now().isoformat())
+            }
+            
+        # 如果任务失败，返回错误信息
+        if result["status"] == "failed":
+            return {
+                "status": "failed",
+                "task_id": task_id,
+                "message": "质量检查任务失败",
+                "error": result.get("error", "未知错误")
+            }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取批量质量检查结果时发生错误: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
