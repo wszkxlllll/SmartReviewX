@@ -314,6 +314,8 @@ Content-Type: application/json
 ```
 
 #### 3.3 质量检查
+
+##### 3.3.1 单个评价质量检查
 ```http
 POST /check_quality
 Content-Type: application/json
@@ -389,6 +391,153 @@ Content-Type: application/json
   "generation_time": 30.63783073425293
 }
 ```
+
+##### 3.3.2 批量质量检查
+```http
+POST /check_quality_batch
+Content-Type: application/json
+
+{
+    "reviews": [
+        {
+            "id": null,
+            "user_background": {
+                "gender": "男",
+                "age": 30,
+                "occupation": "工程师",
+                "income_level": "中高收入",
+                "experience": "专家",
+                "tech_familiarity": "精通",
+                "purchase_purpose": "自用",
+                "region": "北京",
+                "education_level": "硕士",
+                "usage_frequency": "每天",
+                "brand_loyalty": "高"
+            },
+            "product_info": {
+                "name": "iPhone 15 Pro",
+                "category": "electronics",
+                "price_range": "高端",
+                "features": [
+                    "5G网络",
+                    "Pro相机系统",
+                    "钛金属边框"
+                ],
+                "brand": "Apple",
+                "model_number": "A3096",
+                "specifications": {
+                    "处理器": "A17 Pro",
+                    "内存": "8GB",
+                    "存储": "256GB",
+                    "屏幕": "6.1英寸 Super Retina XDR"
+                },
+                "warranty_period": "1年"
+            },
+            "rating": 5,
+            "content": "作为一名工程师，我对iPhone 15 Pro的性能和设计感到非常满意。A17 Pro处理器的运行速度令人印象深刻，无论是日常使用还是运行专业应用都毫无压力。8GB的内存和256GB的存储空间完全满足我的需求，Super Retina XDR屏幕的显示效果也非常出色。钛金属边框不仅美观，还增加了手机的耐用性。5G网络的加入让我的网络体验更上一层楼，Pro相机系统的拍照效果也非常专业。电池续航表现良好，能够支持我一天的高强度使用。散热方面，即使在长时间使用高性能应用时，手机也只是微温，表现令人满意。Apple的售后服务一直很可靠，1年的保修期也让我购买时更加放心。总的来说，iPhone 15 Pro是一款非常适合技术精通用户的高端手机。",
+            "sentiment": "积极",
+            "pros": [
+                "A17 Pro处理器运行速度快",
+                "8GB内存和256GB存储空间充足",
+                "Super Retina XDR屏幕显示效果出色",
+                "钛金属边框美观耐用",
+                "5G网络体验优秀",
+                "Pro相机系统拍照效果专业",
+                "电池续航表现良好",
+                "散热表现令人满意",
+                "售后服务可靠"
+            ],
+            "cons": [
+                "价格较高"
+            ],
+            "sentiment_score": 0.95,
+            "quality_score": 0.95
+        }
+    ],
+    "generation_time": 30.63783073425293
+}
+```
+
+响应：
+```json
+{
+    "status": "processing",
+    "task_id": "53f7bde0-3122-4b6b-9b39-682c5087248d",
+    "message": "质量检查任务已启动",
+    "total_reviews": 1
+}
+```
+
+##### 3.3.3 获取批量检查结果
+```http
+GET /check_quality_batch/53f7bde0-3122-4b6b-9b39-682c5087248d
+```
+
+如果任务正在处理中，返回：
+```json
+{
+    "status": "processing",
+    "task_id": "53f7bde0-3122-4b6b-9b39-682c5087248d",
+    "message": "质量检查任务进行中",
+    "total_reviews": 1,
+    "processed_reviews": 0,
+    "progress": "0/1"
+}
+```
+
+如果任务已完成，返回：
+```json
+{
+    "status": "completed",
+    "task_id": "53f7bde0-3122-4b6b-9b39-682c5087248d",
+    "message": "质量检查任务已完成",
+    "total_reviews": 1,
+    "results": [
+        {
+            "authenticity_score": 4.8,
+            "consistency_score": 4.7,
+            "specificity_score": 4.9,
+            "language_score": 4.8,
+            "overall_score": 4.8,
+            "analysis": [
+                "评价内容与用户背景高度匹配，体现了工程师的专业视角",
+                "评价逻辑连贯，观点前后一致",
+                "包含大量具体的技术参数和使用体验细节",
+                "语言表达专业且自然，符合用户特征"
+            ],
+            "suggestions": [
+                "可以补充更多与其他机型的对比信息",
+                "建议添加一些具体的性能测试数据"
+            ]
+        }
+    ],
+    "start_time": "2024-03-14T10:00:00",
+    "end_time": "2024-03-14T10:00:05"
+}
+```
+
+如果任务失败，返回：
+```json
+{
+    "status": "failed",
+    "task_id": "53f7bde0-3122-4b6b-9b39-682c5087248d",
+    "message": "质量检查任务失败",
+    "error": "具体错误信息"
+}
+```
+
+##### 3.3.4 批量质量检查使用说明
+1. 首先调用 POST `/check_quality_batch` 接口提交评价列表，获取任务ID
+2. 使用返回的任务ID调用 GET `/check_quality_batch/{task_id}` 接口查询结果
+3. 如果任务还在处理中，可以定期轮询获取最新进度
+4. 任务完成后，可以获取完整的质量检查结果
+5. 如果任务失败，可以查看具体的错误信息
+
+注意事项：
+- 批量检查支持最多10条评价
+- 建议在提交大量评价时使用批量检查接口
+- 任务结果会保存在系统中，可以随时查询
+- 建议定期清理已完成的任务结果
 
 ### 4. 错误处理
 - 所有API调用都会返回标准的HTTP状态码
