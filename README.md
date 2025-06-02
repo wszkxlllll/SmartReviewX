@@ -89,7 +89,7 @@ backend/
 ## 使用教程
 
 ### 本地运行
-拉取backend文件夹和requirements.txt文件，并执行pip install -r requirements.txt && python -m uvicorn backend.main:app --reload即可
+拉取SmartReviewX文件夹，并执行pip install -r requirements.txt && python -m uvicorn backend.main:app --reload即可
 
 ### 1. 基本使用流程
 
