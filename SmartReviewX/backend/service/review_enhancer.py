@@ -43,7 +43,8 @@ class ReviewEnhancer:
 
 原始评价：
 {review.content}
-
+{review.pros}
+{review.cons}
 请补充以下方面的信息：
 1. 产品的市场定位和竞品对比
 2. 最新的用户反馈和评价趋势
@@ -121,8 +122,21 @@ class ReviewEnhancer:
             response = self.client.chat.completions.create(
                 model="moonshot-v1-auto",
                 messages=[
-                    {"role": "system", "content": "你是一个专业的评价增强助手。请基于搜索结果，将补充的信息自然地融入到原始评价中，保持评价的连贯性和可读性。"},
-                    {"role": "user", "content": f"原始评价：\n{prompt}\n\n搜索结果：\n{search_result}\n\n请将搜索结果中的信息自然地融入到原始评价中，生成一个完整的、连贯的评价。保持原有的评价风格和情感倾向，只补充客观事实和数据。"}
+                    {"role": "system", "content": "你是一个专业的评价增强助手。请基于搜索结果，将补充的信息自然地融入到原始评价中，以联网信息为准，保持评价的连贯性和可读性。"},
+                    {"role": "user", "content": f"""原始评价：
+{prompt}
+
+搜索结果：
+{search_result}
+
+请将搜索结果中的信息自然地融入到原始评价中，生成一个完整的、连贯的评价。保持原有的评价风格和情感倾向，只补充客观事实和数据。
+
+请以JSON格式返回，必须包含以下字段：
+- enhanced_content: 增强后的评价内容
+- added_info: 补充的信息列表
+- confidence_score: 补充信息的可信度(0-1)
+- pros: 产品的优点列表
+- cons: 产品的缺点列表"""}
                 ],
                 temperature=settings.LLM_TEMPERATURE,
                 max_tokens=settings.LLM_MAX_TOKENS,
@@ -135,9 +149,10 @@ class ReviewEnhancer:
                 
             try:
                 result = json.loads(content)
-                required_fields = ["enhanced_content", "added_info", "confidence_score"]
+                required_fields = ["enhanced_content", "added_info", "confidence_score", "pros", "cons"]
                 if not all(field in result for field in required_fields):
-                    raise ValueError("响应缺少必要字段")
+                    missing_fields = [field for field in required_fields if field not in result]
+                    raise ValueError(f"响应缺少必要字段: {', '.join(missing_fields)}")
                 return result
             except json.JSONDecodeError as e:
                 logger.error(f"JSON解析错误: {str(e)}")
@@ -170,6 +185,8 @@ class ReviewEnhancer:
             
             # 更新评价对象
             review.content = result["enhanced_content"]
+            review.pros = result.get("pros", review.pros)  # 如果API没有返回pros，保留原有的
+            review.cons = result.get("cons", review.cons)  # 如果API没有返回cons，保留原有的
             review.quality_score = min(1.0, review.quality_score + 0.1)
             
             # 记录补充的信息
@@ -183,6 +200,7 @@ class ReviewEnhancer:
             if hasattr(e, 'response'):
                 logger.error(f"API响应状态码: {e.response.status_code}")
                 logger.error(f"API错误信息: {e.response.text}")
+            # 发生错误时保留原有评价内容
             return review
             
     def enhance_reviews(self, reviews: List[GeneratedReview]) -> List[GeneratedReview]:
