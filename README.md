@@ -88,6 +88,9 @@ backend/
 
 ## 使用教程
 
+### 本地运行
+拉取backend文件夹并执行pip install -r requirements.txt && python -m uvicorn backend.main:app --reload即可
+
 ### 1. 基本使用流程
 
 #### 1.1 准备用户背景信息
